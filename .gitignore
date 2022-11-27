@@ -2,7 +2,7 @@
 *.log
 *.pot
 *.pyc
-__pycache__
+__pycache__/*
 db.sqlite3
 media
 
@@ -103,9 +103,4 @@ Control.ca-list
 Control.ca-bundle 
 Control.system-ca-bundle 
 GitHub.sublime-settings 
-ecommerce_course/__pycache__/*
-category/__pycache__/*
-accounts/__pycache__/*
-ecommerce_course/migrations/__pycache__/*
-category/migrations/__pycache__/*
-accounts/migrations/__pycache__/*
+
