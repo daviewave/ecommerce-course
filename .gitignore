@@ -9,14 +9,6 @@ media
 # Backup files # 
 *.bak 
 
-# If you are using PyCharm # 
-# User-specific stuff
-.idea/**/workspace.xml
-.idea/**/tasks.xml
-.idea/**/usage.statistics.xml
-.idea/**/dictionaries
-.idea/**/shelf
-
 # AWS User-specific
 .idea/**/aws.xml
 
@@ -38,12 +30,6 @@ media
 
 # File-based project format
 *.iws
-
-# IntelliJ
-out/
-
-# JIRA plugin
-atlassian-ide-plugin.xml
 
 # Python # 
 *.py[cod] 
@@ -105,18 +91,8 @@ ENV/
 env.bak/ 
 venv.bak/ 
 
-# mkdocs documentation 
-/site 
-
 # mypy 
 .mypy_cache/ 
-
-# Sublime Text # 
-*.tmlanguage.cache 
-*.tmPreferences.cache 
-*.stTheme.cache 
-*.sublime-workspace 
-*.sublime-project 
 
 # sftp configuration file 
 sftp-config.json 
@@ -127,11 +103,9 @@ Control.ca-list
 Control.ca-bundle 
 Control.system-ca-bundle 
 GitHub.sublime-settings 
-
-# Visual Studio Code # 
-.vscode/* 
-!.vscode/settings.json 
-!.vscode/tasks.json 
-!.vscode/launch.json 
-!.vscode/extensions.json 
-.history
+ecommerce_course/__pycache__/*
+category/__pycache__/*
+accounts/__pycache__/*
+ecommerce_course/migrations/__pycache__/*
+category/migrations/__pycache__/*
+accounts/migrations/__pycache__/*
