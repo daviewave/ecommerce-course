@@ -17,7 +17,6 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -27,8 +26,7 @@ SECRET_KEY = "django-insecure-6lsm7+d8@f#nsv^ax722#x(9&68iks#42@48^%sv-s@narc=wv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['localhost']
 
 # Application definition
 
@@ -54,6 +52,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# NOTE: the major urls.py router (root urls.py)
 ROOT_URLCONF = "ecommerce_course.urls"
 
 TEMPLATES = [
@@ -74,6 +73,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "ecommerce_course.wsgi.application"
 
+# NOTE: This specifies that we want to use a custom user model
 AUTH_USER_MODEL = 'accounts.Account'
 
 
@@ -94,7 +94,6 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -126,13 +125,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
+# NOTE: This defines where our static files will be stored in the project
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR /'static'
 STATICFILES_DIRS = ['ecommerce_course/static']
 
-
+# NOTE: This defines where our media files will be stored in the project
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR /'media'
+# MEDIAFILES_DIRS = ['ecommerce_course/media']
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
