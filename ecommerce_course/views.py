@@ -3,7 +3,7 @@ from django.shortcuts import render
 from store.models import Product
 
 def home(request):
-    products = Product.objects.all().filter(is_available=True) # Only bring the available products
+    products = Product.objects.filter(is_available=True) # Only bring the available products
     context = {
         'products': products,
     }
