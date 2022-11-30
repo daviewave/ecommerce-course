@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 # Create your models here.
 class Category(models.Model):
@@ -11,6 +12,9 @@ class Category(models.Model):
     class Meta:
         verbose_name            = "category"
         verbose_name_plural     = "categories"
+
+    def get_url(self):
+            return reverse('products_by_category', args=[self.slug])
 
     # This controls what is displayed to the admin page as the overall app display name (major categories on the left in django 4.1)
     def __str__(self):
