@@ -1,4 +1,13 @@
 from django.shortcuts import render
+from .models import Product
 
 def store(request):
-    return render(request, 'store/store.html')
+    products = Product.objects.filter(is_available=True)
+    num_product = products.count()
+    
+    context = {
+        'products': products,
+        'num_product': num_product,
+    }
+
+    return render(request, 'store/store.html', context)
