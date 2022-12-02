@@ -104,3 +104,7 @@ Control.ca-bundle
 Control.system-ca-bundle 
 GitHub.sublime-settings 
 
+ecommerce_course/__pycache__/settings.cpython-310.pyc
+ecommerce_course/__pycache__/urls.cpython-310.pyc
+ecommerce_course/__pycache__/views.cpython-310.pyc
+category/__pycache__/models.cpython-310.pyc
