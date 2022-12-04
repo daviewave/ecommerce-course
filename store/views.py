@@ -1,7 +1,8 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
 from .models import Product
 from category.models import Category
-
+from carts.models import CartItem
+from carts.views import _get_session_id
 
 
 def store(request, category_slug=None):
@@ -29,11 +30,17 @@ def get_single_product(category_slug, product_slug):
     except Exception as e:
         raise e
 
+def is_already_in_cart(request, single_product):
+    return CartItem.objects.filter(cart__cart_id=_get_session_id(request), product=single_product).exists()
+
+
 def product_detail(request, category_slug, product_slug):
     single_product = get_single_product(category_slug, product_slug)
+    is_in_cart = is_already_in_cart(request, single_product)
       
     context = {
-        'single_product': single_product
+        'single_product': single_product,
+        'is_in_cart': is_in_cart,
     }
 
     return render(request, 'store/product_detail.html', context)
