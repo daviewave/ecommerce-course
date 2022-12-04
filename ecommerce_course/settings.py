@@ -69,7 +69,8 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 
                 #NOTE: By adding this, we are allowing all the templates to use this function
-                "category.context_processors.get_category_links"
+                "category.context_processors.get_category_links",
+                "carts.context_processors.shopping_cart_counter",
             ],
         },
     },
