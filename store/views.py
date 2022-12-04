@@ -12,17 +12,18 @@ def store(request, category_slug=None):
 
     if category_slug != None:
         categories = Category.objects.get(slug=category_slug)
-        products = Product.objects.filter(category=categories, is_available=True)
+        products = Product.objects.filter(category=categories, is_available=True)        
         num_product = products.count()
     else:
         products = Product.objects.filter(is_available=True)
+        num_product = products.count()
         paginator = Paginator(products, 4)
         page = request.GET.get('page') #NOTE: gets the current page of products to be fetched
         paged_products = paginator.get_page(page) #NOTE: this variable stores the paginated products
-        num_product = products.count()
+        products = paged_products
     
     context = {
-        'products': paged_products,
+        'products': products,
         'num_product': num_product,
     }
 
