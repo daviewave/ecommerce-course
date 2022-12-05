@@ -15,7 +15,7 @@ def store(request, category_slug=None):
         products = Product.objects.filter(category=categories, is_available=True)        
         num_product = products.count()
     else:
-        products = Product.objects.filter(is_available=True)
+        products = Product.objects.filter(is_available=True).order_by('id')
         num_product = products.count()
         paginator = Paginator(products, 4)
         page = request.GET.get('page') #NOTE: gets the current page of products to be fetched
@@ -37,7 +37,6 @@ def get_single_product(category_slug, product_slug):
 
 def is_already_in_cart(request, single_product):
     return CartItem.objects.filter(cart__cart_id=_get_session_id(request), product=single_product).exists()
-
 
 def product_detail(request, category_slug, product_slug):
     single_product = get_single_product(category_slug, product_slug)
