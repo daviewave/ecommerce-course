@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect, HttpResponse
 from store.models import Product
 from .models import Cart, CartItem
 
+def get_product_based_by_ID(product_id):
+    return Product.objects.get(id=product_id)
+
 def _get_session_id(request):
     cart = request.session.session_key
     if not cart:
@@ -22,8 +25,17 @@ def _apply_tax(tax_percentage, total_amount):
 def _calculate_grand_total(total, tax):
     return total + tax
 
+def calculate_total_and_quantities(cart_items):
+    total = 0
+    quantity = 0    
+    for item in cart_items:
+        total += (item.product.price * item.quantity)
+        quantity += item.quantity
+
+    return total, quantity
+
 def add_to_cart(request, product_id):
-    product = Product.objects.get(id=product_id)
+    product = get_product_based_by_ID(product_id)
     cart = _get_current_users_cart(request)
     
     try:
@@ -63,16 +75,12 @@ def cart(request, total=0, quantity=0, cart_items=None):
     try: 
         cart = Cart.objects.get(cart_id=_get_session_id(request))
         cart_items = CartItem.objects.filter(cart=cart, is_active=True)
-        for cart_item in cart_items:
-            total += (cart_item.product.price * cart_item.quantity)
-            quantity += cart_item.quantity
-        
+        total, quantity = calculate_total_and_quantities(cart_items)        
         tax = _apply_tax(2, total)
         grand_total = _calculate_grand_total(total, tax)
 
     except Cart.DoesNotExist:
         pass
-
 
     context = {
         "total": total,
