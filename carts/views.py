@@ -35,6 +35,11 @@ def calculate_total_and_quantities(cart_items):
     return total, quantity
 
 def add_to_cart(request, product_id):
+    color = request.GET['color']
+    size = request.GET['size']
+    print(color)
+    print(size)
+    
     product = get_product_based_by_ID(product_id)
     cart = _get_current_users_cart(request)
     
