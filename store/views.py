@@ -4,6 +4,7 @@ from category.models import Category
 from carts.models import CartItem
 from carts.views import _get_session_id
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
 
 def get_single_product(category_slug, product_slug):
     try:
@@ -51,4 +52,18 @@ def store(request, category_slug=None):
         'num_product': num_prods,
     }
 
+    return render(request, 'store/store.html', context)
+
+
+def search(request):
+    if 'keyword' in request.GET:
+        keyword = request.GET['keyword']
+        if keyword:
+            products = Product.objects.order_by('-created_date').filter(Q(description__icontains=keyword) | Q(product_name__icontains=keyword)) #NOTE: 'description__icontains' makes it return anything close to the keyword
+            num_products = products.count() 
+
+    context = {
+        'products': products,
+        "num_product": num_products,
+    }
     return render(request, 'store/store.html', context)
