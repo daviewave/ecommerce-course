@@ -56,16 +56,32 @@ def add_to_cart(request, product_id):
     
     # GET CART
     cart = _get_current_users_cart(request)
-    try:
-        cart_item = CartItem.objects.create(product=product, cart=cart, quantity=1)
-        if len(product_variations) > 0:
-            cart_item.variations.clear()
-            for variation_item in product_variations:
-                cart_item.variations.add(variation_item)
 
-        # cart_item.quantity += 1
-        cart_item.save()
-    except CartItem.DoesNotExist:
+    product_variation_already_in_cart = CartItem.objects.filter(product=product, cart=cart).exists()
+
+    if product_variation_already_in_cart:
+        cart_item = CartItem.objects.filter(product=product, cart=cart)
+        existing_variations = []
+        ids = []
+        for item in cart_item:
+            existing_variation = item.variations.all()
+            existing_variations.append(list(existing_variation))
+            ids.append(item.id)
+
+        print(existing_variations)
+        if product_variations in existing_variations:
+            index = existing_variations.index(product_variations)
+            item_id = ids[index]
+            item = CartItem.objects.get(product=product, id=item_id)
+            item.quantity += 1
+            item.save()
+        else:
+            item = CartItem.objects.create(product=product, cart=cart, quantity=1)
+            if len(product_variations) > 0:
+                item.variations.clear()
+                item.variations.add(*product_variations)
+            item.save()
+    else:
         cart_item = CartItem.objects.create(
             product=product, 
             quantity=1, 
@@ -73,9 +89,7 @@ def add_to_cart(request, product_id):
         )
         if len(product_variations) > 0:
             cart_item.variations.clear()
-            for variation_item in product_variations:
-                cart_item.variations.add(variation_item)
-
+            item.variations.add(*product_variations)
         cart_item.save()
     
     return redirect('cart')
