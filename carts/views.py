@@ -57,13 +57,13 @@ def add_to_cart(request, product_id):
     # GET CART
     cart = _get_current_users_cart(request)
     try:
-        cart_item = CartItem.objects.get(product=product, cart=cart)
+        cart_item = CartItem.objects.create(product=product, cart=cart, quantity=1)
         if len(product_variations) > 0:
             cart_item.variations.clear()
             for variation_item in product_variations:
                 cart_item.variations.add(variation_item)
 
-        cart_item.quantity += 1
+        # cart_item.quantity += 1
         cart_item.save()
     except CartItem.DoesNotExist:
         cart_item = CartItem.objects.create(
