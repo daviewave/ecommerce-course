@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, HttpResponse
-from store.models import Product
+from store.models import Product, Variation
 from .models import Cart, CartItem
 
 def get_product_based_by_ID(product_id):
@@ -35,13 +35,25 @@ def calculate_total_and_quantities(cart_items):
     return total, quantity
 
 def add_to_cart(request, product_id):
-    if request.method == 'POST':    
-        color = request.POST['color']
-        size = request.POST['size']
-        print(color, size)
-    
     product = get_product_based_by_ID(product_id)
     cart = _get_current_users_cart(request)
+    
+    # NOTE: make this a seperate function
+    product_variations = []
+    if request.method == 'POST':    
+        for variation_item in request.POST:
+            variation_category = variation_item
+            variation_category_value = request.POST[variation_category]
+
+            try:
+                variation = Variation.objects.get(product=product, variation_category__iexact=variation_category, variation_value__iexact=variation_category_value)
+                product_variations.append(variation)
+                print(variation)
+            except:
+                pass
+
+    
+
     
     try:
         cart_item = CartItem.objects.get(product=product, cart=cart)
