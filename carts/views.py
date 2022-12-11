@@ -35,9 +35,11 @@ def calculate_total_and_quantities(cart_items):
     return total, quantity
 
 def add_to_cart(request, product_id):
+    # GET PRODUCT
     product = get_product_based_by_ID(product_id)
-    cart = _get_current_users_cart(request)
     
+    
+    # GET PRODUCT VARIATION
     # NOTE: make this a seperate function
     product_variations = []
     if request.method == 'POST':    
@@ -48,15 +50,19 @@ def add_to_cart(request, product_id):
             try:
                 variation = Variation.objects.get(product=product, variation_category__iexact=variation_category, variation_value__iexact=variation_category_value)
                 product_variations.append(variation)
-                print(variation)
             except:
                 pass
 
     
-
-    
+    # GET CART
+    cart = _get_current_users_cart(request)
     try:
         cart_item = CartItem.objects.get(product=product, cart=cart)
+        if len(product_variations) > 0:
+            cart_item.variations.clear()
+            for variation_item in product_variations:
+                cart_item.variations.add(variation_item)
+
         cart_item.quantity += 1
         cart_item.save()
     except CartItem.DoesNotExist:
@@ -65,7 +71,13 @@ def add_to_cart(request, product_id):
             quantity=1, 
             cart=cart
         )
+        if len(product_variations) > 0:
+            cart_item.variations.clear()
+            for variation_item in product_variations:
+                cart_item.variations.add(variation_item)
+
         cart_item.save()
+    
     return redirect('cart')
 
 def remove_from_cart(request, product_id):
