@@ -89,7 +89,7 @@ def add_to_cart(request, product_id):
         )
         if len(product_variations) > 0:
             cart_item.variations.clear()
-            item.variations.add(*product_variations)
+            cart_item.variations.add(*product_variations)
         cart_item.save()
     
     return redirect('cart')
