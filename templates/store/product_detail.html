@@ -54,30 +54,18 @@
                                     <select name="size" id="" class="form-control" required>
                                         <option value="" disabled selected>Select</option>
                                         {% for i in single_product.variation_set.sizes %}
-                                        <option value="{{ i.variation_value | lower }}">{{ i.variation_value | capfirst }}
-                                        </option>
+                                        <option value="{{ i.variation_value | lower }}">{{ i.variation_value | capfirst }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
                             </div>
                             <hr>
-                            <!-- variation selectors -->
 
-                            {% if single_product.stock <= 0 %} <h5>Out of Stock</h5>
-                                {% else %}
-                                {% if is_in_cart %}
-                                <a href="#" class="btn btn-success"> <span class="text">Added To Cart</span><i
-                                        class="fas fa-check"></i> </a>
-                                <a href="{% url 'cart' %}" class="btn btn-outline-primary"> <span class="text">View
-                                        Cart</span><i class="fas fa-shopping-cart"></i> </a>
-                                {% else %}
-                                <button type="submit" class="btn btn-primary"> <span class="text">Add to cart</span><i
-                                        class="fas fa-shopping-cart"></i> </button>
-
-                                {% endif %}
-
-
-                                {% endif %}
+                            {% if single_product.stock <= 0 %} 
+                                <h5 class="text-danger">Out of Stock</h5>
+                            {% else %}
+                                <button type="submit" class="btn btn-primary"> <span class="text">Add To Cart</span><i class="fas fa-shopping-cart"></i> </button>
+                            {% endif %}
 
 
                         </article> <!-- product-info-aside .// -->
