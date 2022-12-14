@@ -3,6 +3,7 @@ from .forms import RegistrationForm
 from .models import Account
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 
 # verification sent email
 from django.contrib.sites.shortcuts import get_current_site
@@ -81,5 +82,5 @@ def logout(request):
     messages.success(request, 'You have logged out.')
     return redirect('login')
 
-def activate(request):
-    return
+def activate(request, uidb64, token):
+    return HttpResponse('SUCCESS')
