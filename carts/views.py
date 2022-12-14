@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect, HttpResponse
 from store.models import Product, Variation
 from .models import Cart, CartItem
 
-def get_product_based_by_ID(product_id):
+#-- Helper Methods --#
+def _get_product_based_by_ID(product_id):
     return Product.objects.get(id=product_id)
 
 def _get_session_id(request):
@@ -25,7 +26,7 @@ def _apply_tax(tax_percentage, total_amount):
 def _calculate_grand_total(total, tax):
     return total + tax
 
-def calculate_total_and_quantities(cart_items):
+def _calculate_total_and_quantities(cart_items):
     total = 0
     quantity = 0    
     for item in cart_items:
@@ -34,13 +35,24 @@ def calculate_total_and_quantities(cart_items):
 
     return total, quantity
 
-def add_to_cart(request, product_id):
-    # GET PRODUCT
-    product = get_product_based_by_ID(product_id)
-    
-    
-    # GET PRODUCT VARIATION
-    # NOTE: make this a seperate function
+def _is_variation_in_cart(product, cart):
+    return CartItem.objects.filter(product=product, cart=cart).exists()
+
+def _get_cart_items_ids_and_existing_variations(cart_item, ):
+    ids = []
+    existing_variations = []
+    for item in cart_item:
+        existing_variation = item.variations.all()
+        existing_variations.append(list(existing_variation))
+        ids.append(item.id)
+    return ids, existing_variations
+
+def _create_new_cart_item(product, cart):
+    return CartItem.objects.create(product=product, quantity=1, cart=cart)
+
+# def disl
+
+def get_product_variations(request, product):
     product_variations = []
     if request.method == 'POST':    
         for variation_item in request.POST:
@@ -52,23 +64,27 @@ def add_to_cart(request, product_id):
                 product_variations.append(variation)
             except:
                 pass
+    return product_variations
 
+def handle_duplicate_products(existing_variations, ids, product, cart):
+    pass
+
+#-- Major Endpoints --#
+def add_to_cart(request, product_id):
+    # 1.
+    product = _get_product_based_by_ID(product_id)
     
-    # GET CART
+    # 2. 
+    product_variations = get_product_variations(request, product)
+
+    # 3. 
     cart = _get_current_users_cart(request)
 
-    product_variation_already_in_cart = CartItem.objects.filter(product=product, cart=cart).exists()
-
-    if product_variation_already_in_cart:
+    # 4. 
+    if _is_variation_in_cart(product, cart):
         cart_item = CartItem.objects.filter(product=product, cart=cart)
-        existing_variations = []
-        ids = []
-        for item in cart_item:
-            existing_variation = item.variations.all()
-            existing_variations.append(list(existing_variation))
-            ids.append(item.id)
+        ids, existing_variations = _get_cart_items_ids_and_existing_variations(cart_item)
 
-        print(existing_variations)
         if product_variations in existing_variations:
             index = existing_variations.index(product_variations)
             item_id = ids[index]
@@ -82,11 +98,7 @@ def add_to_cart(request, product_id):
                 item.variations.add(*product_variations)
             item.save()
     else:
-        cart_item = CartItem.objects.create(
-            product=product, 
-            quantity=1, 
-            cart=cart
-        )
+        cart_item = _create_new_cart_item(product, cart)
         if len(product_variations) > 0:
             cart_item.variations.clear()
             cart_item.variations.add(*product_variations)
@@ -99,6 +111,7 @@ def remove_from_cart(request, product_id, cart_item_id):
     cart = _get_current_users_cart(request)
     # cart_item = CartItem.objects.get(product=product, cart=cart)
 
+    # create seperate function
     try:
         cart_item = CartItem.objects.get(product=product, cart=cart, id=cart_item_id)
         if cart_item.quantity > 1:
@@ -109,25 +122,23 @@ def remove_from_cart(request, product_id, cart_item_id):
     except:
         pass
 
-    
     return redirect('cart')
 
 def remove_all_cart_item(request, product_id, cart_item_id):
     cart = _get_current_users_cart(request)
     product = Product.objects.get(id=product_id)
     cart_item = CartItem.objects.get(product=product, cart=cart, id=cart_item_id)
-
     cart_item.delete()
     return redirect('cart')
 
 def cart(request, total=0, quantity=0, cart_items=None):
+    # create seperate function
     try: 
         cart = Cart.objects.get(cart_id=_get_session_id(request))
         cart_items = CartItem.objects.filter(cart=cart, is_active=True)
-        total, quantity = calculate_total_and_quantities(cart_items)        
-        tax = _apply_tax(2, total)
+        total, quantity = _calculate_total_and_quantities(cart_items)        
+        tax = _apply_tax(total, 2)
         grand_total = _calculate_grand_total(total, tax)
-
     except Cart.DoesNotExist:
         pass
 
