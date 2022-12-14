@@ -50,8 +50,6 @@ def _get_cart_items_ids_and_existing_variations(cart_item, ):
 def _create_new_cart_item(product, cart):
     return CartItem.objects.create(product=product, quantity=1, cart=cart)
 
-# def disl
-
 def get_product_variations(request, product):
     product_variations = []
     if request.method == 'POST':    
@@ -132,6 +130,8 @@ def remove_all_cart_item(request, product_id, cart_item_id):
     return redirect('cart')
 
 def cart(request, total=0, quantity=0, cart_items=None):
+    tax = 0
+    grand_total = 0
     # create seperate function
     try: 
         cart = Cart.objects.get(cart_id=_get_session_id(request))
