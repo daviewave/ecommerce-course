@@ -43,16 +43,8 @@ def register(request):
             to_email = email
             send_email = EmailMessage(mail_subject, message, to=[to_email])
             send_email.send()
-
-            # send_mail(
-            #     mail_subject,
-            #     message,
-            #     settings.EMAIL_HOST_USER,
-            #     [to_email],
-            #     fail_silently=False
-            # )
-            messages.success(request, 'Success! Account Successfully Registered!')
-            return redirect('register')
+            # messages.success(request, 'Success! Account Registered! An activation link was sent to the email provided, activate to log in.')
+            return redirect('/accounts/login/?command=verification&email=' + email)
     else:
         form = RegistrationForm()
             
@@ -65,12 +57,10 @@ def login(request):
     if request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
-
         user = auth.authenticate(email=email, password=password)
         if user is not None:
             auth.login(request, user)
             messages.success(request, "You have successfully logged in.")
-            # return redirect('home')
         else:
             messages.error(request, "Invalid login credentials provided.")
 
@@ -83,4 +73,17 @@ def logout(request):
     return redirect('login')
 
 def activate(request, uidb64, token):
-    return HttpResponse('SUCCESS')
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = Account._default_manager.get(pk=uid) #NOTE: this returns the user object
+    except(TypeError, ValueError, OverflowError, Account.DoesNotExist):
+        user = None
+    
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        messages.success(request, 'Congratulations! Your account is activated.')
+        return redirect('login')
+    else:
+        messages.error(request, 'Invalid activation link.')
+        return redirect('register')
