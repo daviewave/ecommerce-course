@@ -133,10 +133,17 @@ def remove_all_cart_item(request, product_id, cart_item_id):
 def cart(request, total=0, quantity=0, cart_items=None):
     tax = 0
     grand_total = 0
-    # create seperate function
+    
     try: 
-        cart = Cart.objects.get(cart_id=_get_session_id(request))
-        cart_items = CartItem.objects.filter(cart=cart, is_active=True)
+        if request.user.is_authenticated:
+            cart_items = CartItem.objects.filter(user=request.user, is_active=True)
+        else:
+            cart = Cart.objects.get(cart_id=_get_session_id(request))
+            cart_items = CartItem.objects.filter(cart=cart, is_active=True)
+        
+        print('CART ITEMS')
+        print(cart_items)
+
         total, quantity = _calculate_total_and_quantities(cart_items)        
         tax = _apply_tax(total, 2)
         grand_total = _calculate_grand_total(total, tax)
