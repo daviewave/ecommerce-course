@@ -16,8 +16,7 @@ def calculate_number_of_items(cart_items):
 
 def shopping_cart_counter(request):
     if 'admin' in request.path:
-        print('NOT COUNTING ADMIN PAGE')
-        return() 
+        return {}
     else: 
         try: 
             cart = Cart.objects.filter(cart_id=_get_session_id(request))
