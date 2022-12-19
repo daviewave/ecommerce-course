@@ -133,12 +133,14 @@ def add_to_cart(request, product_id):
 
 def remove_from_cart(request, product_id, cart_item_id):
     product = Product.objects.get(id=product_id)
-    cart = _get_current_users_cart(request)
-    # cart_item = CartItem.objects.get(product=product, cart=cart)
-
-    # create seperate function
+    user = request.user
     try:
-        cart_item = CartItem.objects.get(product=product, cart=cart, id=cart_item_id)
+        if user.is_authenticated:
+            cart_item = CartItem.objects.get(product=product, user=user, id=cart_item_id)
+        else:
+            cart = _get_current_users_cart(request)
+            cart_item = CartItem.objects.get(product=product, cart=cart, id=cart_item_id)
+        
         if cart_item.quantity > 1:
             cart_item.quantity -= 1
             cart_item.save()
