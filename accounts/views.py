@@ -12,8 +12,30 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes   
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage, send_mail
-from ecommerce_course import settings
+from carts.models import Cart, CartItem
+from store.models import Product
 
+
+
+def _get_session_id(request):
+    cart = request.session.session_key
+    if not cart:
+        cart = request.session.create()
+    return cart
+
+def _get_current_users_cart(request):
+    try: 
+        cart = Cart.objects.get(cart_id=_get_session_id(request))
+    except Cart.DoesNotExist:
+        cart = Cart.objects.create(cart_id=_get_session_id(request))
+    cart.save()
+    return cart
+
+def _is_variation_in_cart(cart):
+    return CartItem.objects.filter(cart=cart).exists()
+
+def _get_product_based_by_ID(product_id):
+    return Product.objects.get(id=product_id)
 
 #-- Major Endpoints --#
 def register(request):
@@ -59,6 +81,15 @@ def login(request):
         password = request.POST['password']
         user = auth.authenticate(email=email, password=password)
         if user is not None:
+            try:
+                cart = _get_current_users_cart(request)
+                if _is_variation_in_cart(cart):
+                    cart_item = CartItem.objects.filter(cart=cart)
+                    for item in cart_item:
+                        item.user = user
+                        item.save()
+            except:
+                pass
             auth.login(request, user)
             messages.success(request, "You have successfully logged in.")
             return redirect('dashboard')
