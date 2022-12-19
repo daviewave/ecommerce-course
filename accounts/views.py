@@ -16,6 +16,14 @@ from carts.models import Cart, CartItem
 from store.models import Product
 
 
+def _get_cart_items_ids_and_existing_variations(cart_items):
+    ids = []
+    existing_variations = []
+    for item in cart_items:
+        existing_variation = item.variations.all()
+        existing_variations.append(list(existing_variation))
+        ids.append(item.id)
+    return ids, existing_variations
 
 def _get_session_id(request):
     cart = request.session.session_key
@@ -75,6 +83,9 @@ def register(request):
     }
     return render(request, 'accounts/register.html', context)
 
+# def combine_session_to_user_cart_variations():
+
+
 def login(request):
     if request.method == 'POST':
         email = request.POST['email']
@@ -85,9 +96,30 @@ def login(request):
                 cart = _get_current_users_cart(request)
                 if _is_variation_in_cart(cart):
                     cart_item = CartItem.objects.filter(cart=cart)
+                    
+                    # Getting the product variation by ID
+                    product_variations = []
                     for item in cart_item:
-                        item.user = user
-                        item.save()
+                        variation = item.variations.all()
+                        product_variations.append(list(variation))
+
+                    # Get the cart items from the Users product variations
+                    cart_item = CartItem.objects.filter(user=user)
+                    ids, existing_variations = _get_cart_items_ids_and_existing_variations(cart_item)
+
+                    for product in product_variations:
+                        if product in existing_variations:
+                            index = existing_variations.index(product)
+                            item_id = ids[index]
+                            item = CartItem.objects.get(id=item_id)
+                            item.quantity += 1
+                            item.user = user
+                            item.save()
+                        else:
+                            cart_item = CartItem.objects.filter(cart=cart)
+                            for item in cart_item:
+                                item.user = user
+                                item.save()
             except:
                 pass
             auth.login(request, user)
