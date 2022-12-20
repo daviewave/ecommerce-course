@@ -152,9 +152,14 @@ def remove_from_cart(request, product_id, cart_item_id):
     return redirect('cart')
 
 def remove_all_cart_item(request, product_id, cart_item_id):
-    cart = _get_current_users_cart(request)
+    user = request.user
     product = Product.objects.get(id=product_id)
-    cart_item = CartItem.objects.get(product=product, cart=cart, id=cart_item_id)
+    
+    if user.is_authenticated:
+        cart_item = CartItem.objects.get(product=product, user=user, id=cart_item_id)
+    else:
+        cart = _get_current_users_cart(request)
+        cart_item = CartItem.objects.get(product=product, cart=cart, id=cart_item_id)
     cart_item.delete()
     return redirect('cart')
 
