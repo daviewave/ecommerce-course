@@ -14,6 +14,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage, send_mail
 from carts.models import Cart, CartItem
 from store.models import Product
+import requests
 
 
 def _get_cart_items_ids_and_existing_variations(cart_items):
@@ -124,7 +125,15 @@ def login(request):
                 pass
             auth.login(request, user)
             messages.success(request, "You have successfully logged in.")
-            return redirect('dashboard')
+            url = request.META.get('HTTP_REFERER') # NOTE: returns us to the url we had before this page
+            try:
+                query = requests.utils.urlparse(url).query
+                params = dict(x.split('=') for x in query.split('&')) # NOTE: this removes the '=' from the query to be used as a param
+                if 'next' in params:
+                    next_page = params['next']
+                    return redirect(next_page)                
+            except:
+                return redirect('dashboard') 
         else:
             messages.error(request, "Invalid login credentials provided.")
 
