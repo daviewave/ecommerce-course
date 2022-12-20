@@ -1,5 +1,6 @@
 from django.db import models
 from accounts.models import Account
+from store.models import Product, Variation
 
 class Payment(models.Model):
     payment_id      = models.CharField(max_length=100)
@@ -57,3 +58,30 @@ class Order(models.Model):
     def __str__(self):
         return self.user.first_name
     
+class OrderProduct(models.Model):
+    # CharFields
+    color           = models.CharField(max_length=50)
+    size            = models.CharField(max_length=50)
+
+    # IntegerField
+    quantity        = models.IntegerField()
+
+    # FloatField
+    product_price   = models.FloatField()
+
+    # BooleanFields
+    is_ordered      = models.BooleanField(default=False)
+
+    # DateTimeFields
+    created_at      = models.DateTimeField(auto_now_add=True)
+    updated_at      = models.DateTimeField(auto_now=True)
+
+    # Foreign Keys
+    order           = models.ForeignKey(Order, on_delete=models.CASCADE, null=True)
+    payment         = models.ForeignKey(Payment, on_delete=models.SET_NULL, blank=True, null=True)
+    account         = models.ForeignKey(Account, on_delete=models.CASCADE)
+    payment         = models.ForeignKey(Product, on_delete=models.CASCADE)
+    payment         = models.ForeignKey(Variation, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.product.product_name
