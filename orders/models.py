@@ -34,7 +34,6 @@ class Order(models.Model):
     country         = models.CharField(max_length=50)
     order_note      = models.CharField(max_length=150, blank=True)
     status          = models.CharField(max_length=10, choices=STATUS, default='New')
-    order_note      = models.CharField(max_length=150, blank=True)
     ip_addr         = models.CharField(max_length=20, blank=True)
 
     # EmailFields
