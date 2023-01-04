@@ -59,7 +59,9 @@ def _collect_form_data(request, user, tax, grand_total):
                 data.order_number   = order_number
 
                 data.save()
-                # return redirect('checkout')
+                
+                return Order.objects.get(user=user, is_ordered=False, order_number=order_number)
+
         except Exception as invalid_form:
             raise(invalid_form)
             
@@ -75,8 +77,25 @@ def place_order(request, total=0, quantity=0):
     tax = _apply_tax(total, 2)
     grand_total = _calculate_grand_total(total, tax)
 
-    _collect_form_data(request, user, tax, grand_total)
-    return redirect('checkout')
+    order = _collect_form_data(request, user, tax, grand_total)
+
+    context = {
+        'order': order,
+        'cart_items': cart_items,
+        'total': total,
+        'tax': tax,
+        'grand_total': grand_total
+    }
+    return render(request, 'orders/payment.html', context)
 
 def payment(request):
+    # 1. get_billing_address()
+
+
+
+    # context = {
+    #     "billing_address": billing_address,
+    #     "payment_method": 'paypal,
+    #     "reviews": reviews 
+    # }
     return render(request, 'orders/payment.html')
