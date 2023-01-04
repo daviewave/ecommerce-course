@@ -77,3 +77,6 @@ def place_order(request, total=0, quantity=0):
 
     _collect_form_data(request, user, tax, grand_total)
     return redirect('checkout')
+
+def payment(request):
+    return render(request, 'orders/payment.html')
