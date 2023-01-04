@@ -14,7 +14,13 @@
                 <div class="card">
                     <h5 class="card-header">Billing Address</h5>
                     <div class="card-body">
-                        <p class="card-text"></p>
+                        <p class="card-text mb-0"><b>Order for: </b>{{ order.full_name }}</p>
+                        <p class="card-text mb-0"><b>Address: </b>{{ order.full_address }}</p>
+                        <p class="card-text mb-0"><b>Email Address: </b>{{ order.email }}</p>
+                        <p class="card-text mb-0"><b>Phone: </b>{{ order.phone }}</p>
+                        {% if order.order_note %}
+                        <br /><b>Order Notes: </b>{{ order.order_note }}
+                        {% endif %}
                     </div>
                 </div>
 
