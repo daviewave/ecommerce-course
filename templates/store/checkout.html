@@ -14,49 +14,48 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title mb-4">Billing Address</h4>
-                        <form action="" method="POST">
+                        <form action="{% url 'place_order' %}" method="POST">
                             {% csrf_token %}
-                            <div class="class form-row">
+                            <div class="form-row">
                                 <div class="col form-group">
                                     <label for="">First Name</label>
                                     <input type="text" name="first_name" class="form-control" required>
                                 </div>
                                 <div class="col form-group">
-                                    <label for="">Last Name</label>
+                                    <label for="last_name">Last Name</label>
                                     <input type="text" name="last_name" class="form-control" required>
                                 </div>
                             </div>
 
-                            <div class="class form-row">
+                            <div class="form-row">
                                 <div class="col form-group">
-                                    <label for="">Email</label>
-                                    <input type="text" name="email" class="form-control" required>
+                                    <label for="email">Email</label>
+                                    <input type="email" name="email" class="form-control" required>
                                 </div>
                                 <div class="col form-group">
-                                    <label for="">Phone Number</label>
+                                    <label for="phone">Phone Number</label>
                                     <input type="text" name="phone" class="form-control" required>
                                 </div>
                             </div>
 
-                            <div class="class form-row">
+                            <div class="form-row">
                                 <div class="col form-group">
-                                    <label for="">Address Line 1</label>
-                                    <input type="text" name="address_line_1" class="form-control" required>
+                                    <label for="addr_1">Address Line 1</label>
+                                    <input type="text" name="addr_1" class="form-control" required>
                                 </div>
                                 <div class="col form-group">
-                                    <label for="">Address Line 2</label>
-                                    <input type="text" name="address_line_1" class="form-control"
-                                        placeholder="optional...">
+                                    <label for="addr_2">Address Line 2</label>
+                                    <input type="text" name="addr_2" class="form-control" placeholder="optional...">
                                 </div>
                             </div>
 
-                            <div class="class form-row">
+                            <div class="form-row">
                                 <div class="col form-group">
                                     <label for="">City</label>
                                     <input type="text" name="city" class="form-control" required>
                                 </div>
                                 <div class="col form-group">
-                                    <label for="">State</label>
+                                    <label for="state">State</label>
                                     <input type="text" name="state" class="form-control" required>
                                 </div>
                                 <div class="col form-group">
@@ -123,9 +122,9 @@
                                 {% endfor %}
                             </tbody>
                         </table>
-                        <button type="submit" name="submit" class="btn btn-primary btn-block"> Place Order </button>
-                        </form>
+                        <button type="submit" name="submit" class="btn btn-primary btn-block">Place Order</button>
                         <a href="{% url 'store' %}" class="btn btn-light btn-block">Continue Shopping</a>
+                        </form>
                     </div> <!-- card-body.// -->
                 </div> <!-- card.// -->
 
