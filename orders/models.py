@@ -42,6 +42,7 @@ class Order(models.Model):
     # FloatFields
     order_total     = models.FloatField()
     tax             = models.FloatField()
+    # zip_code        = models.IntegerField(max_length=8, blank=False)
 
     # BooleanFields
     is_ordered      = models.BooleanField(default=False)
@@ -53,6 +54,12 @@ class Order(models.Model):
     # Foreign Keys
     user            = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True)
     payment         = models.ForeignKey(Payment, on_delete=models.SET_NULL, blank=True, null=True)
+
+    def full_name(self):
+        return f'{self.first_name} {self.last_name}'
+    
+    def full_address(self):
+        return f'{self.addr_1}, {self.city}, {self.state}'
 
     def __str__(self):
         return self.first_name
