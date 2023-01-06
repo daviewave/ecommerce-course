@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
 from carts.models import CartItem
 from .forms import OrderForm
-from orders.models import Order
+from orders.models import Order, Payment
 import datetime
+import json
 
 
-def _calculate_total_and_quantities(cart_items):
+def _calculate_total_and_quantities(cart_items: CartItem):
     total = 0
     quantity = 0    
     for item in cart_items:
@@ -14,18 +15,18 @@ def _calculate_total_and_quantities(cart_items):
 
     return total, quantity
 
-def _apply_tax(tax_percentage, total_amount):
+def _apply_tax(tax_percentage: float, total_amount: float):
     return (tax_percentage * total_amount) / 100
 
-def _calculate_grand_total(total, tax):
+def _calculate_grand_total(total: float, tax: float):
     return total + tax
 
-def _check_if_shopping_cart_empty(cart_items):
+def _check_if_shopping_cart_empty(cart_items: CartItem):
     if cart_items.count() <= 0:
         return redirect('store')
     return
 
-def _collect_form_data(request, user, tax, grand_total):
+def _collect_form_data(request, user, tax: float, grand_total: float):
     if request.method == 'POST':
         form = OrderForm(request.POST)
         try:
@@ -48,13 +49,13 @@ def _collect_form_data(request, user, tax, grand_total):
                 data.ip_addr        = request.META.get('REMOTE_ADDR')
                 data.save()
 
-                # Generate order number
+                # Generate order number based on current data + the id
+                # create seperate function called 'generate_order_number(data: Dict): -> order_number'
                 year            = int(datetime.date.today().strftime('%Y'))
                 month           = int(datetime.date.today().strftime('%m'))
                 day             = int(datetime.date.today().strftime('%d'))
                 today           = datetime.date(year, month, day)
                 current_date    = today.strftime("%Y%m%d")
-
                 order_number        = current_date + str(data.id)
                 data.order_number   = order_number
 
@@ -88,14 +89,36 @@ def place_order(request, total=0, quantity=0):
     }
     return render(request, 'orders/payment.html', context)
 
+def _get_user_order(user, body: dict):
+    return Order.objects.get(user=user, is_ordered=False, order_number=body['orderID'])
+
+def _get_user_order_total(order):
+    return order.order_total
+
+def _create_payment(user, body, order):
+    payment = Payment(
+        user            = user,
+        payment_id      = body['transactionID'],
+        payment_method  = body['payment_method'],
+        amount_paid     = _get_user_order_total(order),
+        status          = body['status'],
+    )
+    payment.save()
+    return payment
+
+def _link_payment_to_order(order, payment):
+    order.payment = payment
+
+def _confirm_payment(order):
+    order.is_ordered = True
+    order.save()
+
 def payment(request):
-    # 1. get_billing_address()
+    body = json.loads(request.body)
+    order = _get_user_order(request.user, body)
+    payment = _create_payment(request.user, body, order)
 
+    _link_payment_to_order(order, payment)
+    _confirm_payment(order)
 
-
-    # context = {
-    #     "billing_address": billing_address,
-    #     "payment_method": 'paypal,
-    #     "reviews": reviews 
-    # }
     return render(request, 'orders/payment.html')
