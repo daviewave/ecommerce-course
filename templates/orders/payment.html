@@ -107,10 +107,26 @@
 
                         <div id="paypal-button-container">
                             <script
-                                src="https://www.paypal.com/sdk/js?client-id=ASFSERQUO0dv2ptk_u9LDLm3LBrdmC4XsycaWy4NFepKlMTHcud6soHCl5na2TNTs6JHEnCW1oWyyanC&currency=USD&intent=capture&enable-funding=venmo"
+                                src="https://www.paypal.com/sdk/js?client-id=AZzkwu5Mbtq64q3w2Img1qpWtTm9CnisB3pJmAV3rRAnVRhp45NKLJEfvLQRZvJnUOysZblBP8niDWJc&currency=USD&intent=capture&enable-funding=venmo"
                                 data-sdk-integration-source="integrationbuilder"></script>
 
                             <script>
+                                function getCookie(name) {
+                                    let cookieValue = null;
+                                    if (document.cookie && document.cookie !== '') {
+                                        const cookies = document.cookie.split(';');
+                                        for (let i = 0; i < cookies.length; i++) {
+                                            const cookie = cookies[i].trim();
+                                            // Does this cookie string begin with the name we want?
+                                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    return cookieValue;
+                                }
+
                                 const paypalButtonsComponent = paypal.Buttons({
                                     // optional styling for buttons
                                     // https://developer.paypal.com/docs/checkout/standard/customize/buttons-style-guide/
@@ -128,18 +144,39 @@
                                             purchase_units: [
                                                 {
                                                     amount: {
-                                                        value: "88.44"
+                                                        value: `{{ grand_total }}`
                                                     }
                                                 }
                                             ]
                                         };
-
                                         return actions.order.create(createOrderPayload);
                                     },
 
                                     // finalize the transaction
                                     onApprove: (data, actions) => {
+                                        console.log('DATA')
+                                        console.log(data)
+                                        console.log('ACTIONS')
+                                        console.log(actions)
                                         const captureOrderHandler = (details) => {
+                                            storeTransactionDetails()
+                                            function storeTransactionDetails() {
+                                                fetch(`{% url 'payment' %}`, {
+                                                    method: "POST",
+                                                    headers: {
+                                                        "Content-type": "application/json",
+                                                        "X-CSRFToken": getCookie('csrftoken'),
+                                                    },
+                                                    // THIS IS WHERE WE SEND THE TRANSACTION DETAILS TO THE DATABASE
+                                                    body: JSON.stringify({
+                                                        orderID: `{{order.order_number}}`,
+                                                        transactionID: details.id,
+                                                        payment_method: data.paymentSource,
+                                                        status: details.status,
+                                                    }),
+                                                })
+                                            }
+
                                             const payerName = details.payer.name.given_name;
                                             console.log('Transaction completed');
                                         };
