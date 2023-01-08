@@ -85,7 +85,7 @@ class OrderProduct(models.Model):
     payment                     = models.ForeignKey(Payment, on_delete=models.SET_NULL, blank=True, null=True)
     account                     = models.ForeignKey(Account, on_delete=models.CASCADE)
     product                     = models.ForeignKey(Product, on_delete=models.CASCADE)
-    product_variation           = models.ForeignKey(Variation, on_delete=models.CASCADE)
+    product_variation           = models.ManyToManyField(Variation, blank=True)
 
     def __str__(self):
         return self.product.product_name
