@@ -1,10 +1,9 @@
 from django.shortcuts import render, redirect
 from carts.models import CartItem
 from .forms import OrderForm
-from orders.models import Order, Payment
+from orders.models import Order, OrderProduct, Payment
 import datetime
 import json
-
 
 def _calculate_total_and_quantities(cart_items: CartItem):
     total = 0
@@ -43,6 +42,7 @@ def _collect_form_data(request, user, tax: float, grand_total: float):
                 data.state          = form.cleaned_data['state']
                 data.country        = form.cleaned_data['country']
                 data.order_note     = form.cleaned_data['order_note']
+                data.zip_code       = form.cleaned_data['zip_code']
 
                 data.tax            = tax
                 data.order_total    = grand_total
@@ -56,6 +56,7 @@ def _collect_form_data(request, user, tax: float, grand_total: float):
                 day             = int(datetime.date.today().strftime('%d'))
                 today           = datetime.date(year, month, day)
                 current_date    = today.strftime("%Y%m%d")
+
                 order_number        = current_date + str(data.id)
                 data.order_number   = order_number
 
@@ -69,6 +70,7 @@ def _collect_form_data(request, user, tax: float, grand_total: float):
 def place_order(request, total=0, quantity=0):
     user = request.user
     
+    # make 1 common query method here
     cart_items = CartItem.objects.filter(user=user)
     _check_if_shopping_cart_empty(cart_items)
 
@@ -89,13 +91,14 @@ def place_order(request, total=0, quantity=0):
     }
     return render(request, 'orders/payment.html', context)
 
+
 def _get_user_order(user, body: dict):
     return Order.objects.get(user=user, is_ordered=False, order_number=body['orderID'])
 
-def _get_user_order_total(order):
+def _get_user_order_total(order: dict):
     return order.order_total
 
-def _create_payment(user, body, order):
+def _create_payment(user, body: dict, order: dict):
     payment = Payment(
         user            = user,
         payment_id      = body['transactionID'],
@@ -106,10 +109,10 @@ def _create_payment(user, body, order):
     payment.save()
     return payment
 
-def _link_payment_to_order(order, payment):
+def _link_payment_to_order(order: dict, payment: dict):
     order.payment = payment
 
-def _confirm_payment(order):
+def _confirm_payment(order: dict):
     order.is_ordered = True
     order.save()
 
@@ -120,5 +123,20 @@ def payment(request):
 
     _link_payment_to_order(order, payment)
     _confirm_payment(order)
+
+    cart_items = CartItem.objects.filter(user=request.user)
+    for item in cart_items:
+        order_product = OrderProduct()
+        order_product.order_id = order.id
+        order_product.payment = payment
+        order_product.account_id = request.user.id
+        order_product.product_id = item.product_id
+        order_product.quantity = item.quantity
+        order_product.product_price = item.product.price
+        order_product.is_ordered = True
+        order_product.save()
+
+
+
 
     return render(request, 'orders/payment.html')
