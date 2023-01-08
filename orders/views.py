@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from carts.models import CartItem
 from .forms import OrderForm
 from orders.models import Order, OrderProduct, Payment
+from store.models import Product
 import datetime
 import json
 
@@ -127,6 +128,7 @@ def payment(request):
     # 'get_users_cart_items()' query method
     cart_items = CartItem.objects.filter(user=request.user)
 
+    # 1st refactor function
     # '_save_products_in_cart_at_time_of_order()' function
     for item in cart_items:
         order_product = OrderProduct()
@@ -146,6 +148,10 @@ def payment(request):
         order_product.product_variation.set(product_variation)
         order_product.save()
 
-        
+        # 'decrease_product_stock(id)'
+        product = Product.objects.get(id=item.product_id)
+        product.stock -= item.quantity
+        product.save()
+
 
     return render(request, 'orders/payment.html')
