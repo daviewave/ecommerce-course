@@ -124,7 +124,10 @@ def payment(request):
     _link_payment_to_order(order, payment)
     _confirm_payment(order)
 
+    # 'get_users_cart_items()' query method
     cart_items = CartItem.objects.filter(user=request.user)
+
+    # '_save_products_in_cart_at_time_of_order()' function
     for item in cart_items:
         order_product = OrderProduct()
         order_product.order_id = order.id
@@ -135,8 +138,14 @@ def payment(request):
         order_product.product_price = item.product.price
         order_product.is_ordered = True
         order_product.save()
+        
+        # '_link_foreign_keys_to_order_products()' function
+        cart_item = CartItem.objects.get(id=item.id)
+        product_variation = cart_item.variations.all()
+        order_product = OrderProduct.objects.get(id=order_product.id)
+        order_product.product_variation.set(product_variation)
+        order_product.save()
 
-
-
+        
 
     return render(request, 'orders/payment.html')
