@@ -7,6 +7,7 @@ import datetime
 import json
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
+from django.http import JsonResponse
 
 def _calculate_total_and_quantities(cart_items: CartItem):
     total = 0
@@ -146,7 +147,7 @@ def _save_products_in_cart_at_time_of_order(cart_items, user, order, payment):
 def _clear_cart_items(user):
     CartItem.objects.filter(user=user).delete()
 
-def _send_order_confirmation_to_purchaser(user, order):
+def _send_order_confirmation_email_to_purchaser(user, order):
     mail_subject = 'Your order has been completed.'
     message = render_to_string('orders/order_confirmation_email.html', {
         'user': user,
@@ -166,9 +167,13 @@ def payment(request):
     _confirm_payment(order)
     _save_products_in_cart_at_time_of_order(cart_items, request.user, order, payment)
     _clear_cart_items(request.user)
-    _send_order_confirmation_to_purchaser(request.user, order)
+    _send_order_confirmation_email_to_purchaser(request.user, order)
     
-    return render(request, 'orders/payment.html')
+    data = {
+        'order_number': order.order_number,
+        'transactionID': payment.payment_id,
+    }
+    return JsonResponse(data)
 
 def order_complete(request):
     return render(request, 'orders/order_complete.html')
