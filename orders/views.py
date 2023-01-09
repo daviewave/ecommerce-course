@@ -119,6 +119,43 @@ def _confirm_payment(order: dict):
     order.is_ordered = True
     order.save()
 
+def get_current_user_cart(user):
+    return CartItem.objects.filter(user=user)
+
+def _link_foreign_keys_to_order_products(order_product, item):
+    cart_item = CartItem.objects.get(id=item.id)
+    product_variation = cart_item.variations.all()
+    order_product = OrderProduct.objects.get(id=order_product.id)
+    order_product.product_variation.set(product_variation)
+    order_product.save()
+
+def _save_products_in_cart_at_time_of_order(cart_items, user, order):
+    for item in cart_items:
+        order_product = OrderProduct()
+        order_product.order_id = order.id
+        order_product.payment = payment
+        order_product.account_id = user.id
+        order_product.product_id = item.product_id
+        order_product.quantity = item.quantity
+        order_product.product_price = item.product.price
+        order_product.is_ordered = True
+        order_product.save()
+
+        _link_foreign_keys_to_order_products(order_product, item)
+        
+def _clear_cart_items(user):
+    CartItem.objects.filter(user=user).delete()
+
+def _send_order_confirmation_to_purchaser(user, order):
+    mail_subject = 'Your order has been completed.'
+    message = render_to_string('orders/order_confirmation_email.html', {
+        'user': user,
+        'order': order,
+    })
+    to_email = user.email
+    send_email = EmailMessage(mail_subject, message, to=[to_email])
+    send_email.send()
+
 def payment(request):
     body = json.loads(request.body)
     order = _get_user_order(request.user, body)
@@ -127,45 +164,9 @@ def payment(request):
     _link_payment_to_order(order, payment)
     _confirm_payment(order)
 
-    # 'get_users_cart_items()' query method
-    cart_items = CartItem.objects.filter(user=request.user)
-
-    # 1st refactor function
-    # '_save_products_in_cart_at_time_of_order()' function
-    for item in cart_items:
-        order_product = OrderProduct()
-        order_product.order_id = order.id
-        order_product.payment = payment
-        order_product.account_id = request.user.id
-        order_product.product_id = item.product_id
-        order_product.quantity = item.quantity
-        order_product.product_price = item.product.price
-        order_product.is_ordered = True
-        order_product.save()
-        
-        # '_link_foreign_keys_to_order_products()' function
-        cart_item = CartItem.objects.get(id=item.id)
-        product_variation = cart_item.variations.all()
-        order_product = OrderProduct.objects.get(id=order_product.id)
-        order_product.product_variation.set(product_variation)
-        order_product.save()
-
-        # 'decrease_product_stock(id)'
-        product = Product.objects.get(id=item.product_id)
-        product.stock -= item.quantity
-        product.save()
-
-    # 'clear_cart_items()'
-    CartItem.objects.filter(user=request.user).delete()
-
-    # 'send_order_confirmation_to_purchaser()'
-    mail_subject = 'Your order has been completed.'
-    message = render_to_string('orders/order_confirmation_email.html', {
-        'user': request.user,
-        'order': order,
-    })
-    to_email = request.user.email
-    send_email = EmailMessage(mail_subject, message, to=[to_email])
-    send_email.send()
-
+    cart_items = get_current_user_cart(request.user)
+    _save_products_in_cart_at_time_of_order(cart_items, request.user, order)
+    _clear_cart_items(request.user)
+    _send_order_confirmation_to_purchaser(request.user, order)
+    
     return render(request, 'orders/payment.html')
