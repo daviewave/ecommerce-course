@@ -175,6 +175,10 @@
                                                         status: details.status,
                                                     }),
                                                 })
+                                                    .then(res => res.json())
+                                                    .then(data => {
+                                                        window.location.href = `{% url 'order_complete' %}`
+                                                    })
                                             }
 
                                             const payerName = details.payer.name.given_name;
