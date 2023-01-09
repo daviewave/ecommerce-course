@@ -5,6 +5,8 @@ from orders.models import Order, OrderProduct, Payment
 from store.models import Product
 import datetime
 import json
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
 
 def _calculate_total_and_quantities(cart_items: CartItem):
     total = 0
@@ -156,5 +158,14 @@ def payment(request):
     # 'clear_cart_items()'
     CartItem.objects.filter(user=request.user).delete()
 
+    # 'send_order_confirmation_to_purchaser()'
+    mail_subject = 'Your order has been completed.'
+    message = render_to_string('orders/order_confirmation_email.html', {
+        'user': request.user,
+        'order': order,
+    })
+    to_email = request.user.email
+    send_email = EmailMessage(mail_subject, message, to=[to_email])
+    send_email.send()
 
     return render(request, 'orders/payment.html')
