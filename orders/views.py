@@ -129,7 +129,7 @@ def _link_foreign_keys_to_order_products(order_product, item):
     order_product.product_variation.set(product_variation)
     order_product.save()
 
-def _save_products_in_cart_at_time_of_order(cart_items, user, order):
+def _save_products_in_cart_at_time_of_order(cart_items, user, order, payment):
     for item in cart_items:
         order_product = OrderProduct()
         order_product.order_id = order.id
@@ -160,12 +160,11 @@ def payment(request):
     body = json.loads(request.body)
     order = _get_user_order(request.user, body)
     payment = _create_payment(request.user, body, order)
+    cart_items = get_current_user_cart(request.user)
 
     _link_payment_to_order(order, payment)
     _confirm_payment(order)
-
-    cart_items = get_current_user_cart(request.user)
-    _save_products_in_cart_at_time_of_order(cart_items, request.user, order)
+    _save_products_in_cart_at_time_of_order(cart_items, request.user, order, payment)
     _clear_cart_items(request.user)
     _send_order_confirmation_to_purchaser(request.user, order)
     
