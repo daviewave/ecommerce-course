@@ -181,28 +181,33 @@ def payment(request):
     }
     return JsonResponse(data)
 
-def order_complete(request):
-    order_number = request.GET.get('orderID')
-    transctionID = request.GET.get('payment_id')
-
-    # 1.
+def get_order_details(order_number, transactionID):
     try:
-        order = Order.objects.get(order_number=order_number, is_ordered=True)
-        ordered_products = OrderProduct.objects.filter(order_id=order.id)
-        payment = Payment.objects.get(payment_id=transctionID)
+        order = Order.objects.get(order_number=order_number, is_ordered=True)        
+        payment = Payment.objects.get(payment_id=transactionID)
+        return order, payment
     except (Order.DoesNotExist, Payment.DoesNotExist):
         return redirect('home')
 
-    # 2.
-    sub_total = order.order_total - order.tax
+def get_ordered_products(order):
+    return OrderProduct.objects.filter(order_id=order.id)
+
+def calc_subtotal(order):
+    return order.order_total - order.tax
+
+def order_complete(request):
+    order_number = request.GET.get('orderID')
+    transactionID = request.GET.get('payment_id')
+
+    order, payment = get_order_details(order_number, transactionID)
 
     context = {
         'order': order,
-        'ordered_products': ordered_products,
+        'ordered_products': get_ordered_products(order),
         'orderID': order.order_number,
-        'payment_id': transctionID,
+        'payment_id': payment.payment_id,
         'payment': payment,
-        'sub_total': sub_total,
+        'sub_total': calc_subtotal(order),
         'tax': order.tax,
     }
     return render(request, 'orders/order_complete.html', context)
