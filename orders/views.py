@@ -170,10 +170,39 @@ def payment(request):
     _send_order_confirmation_email_to_purchaser(request.user, order)
     
     data = {
-        'order_number': order.order_number,
+        'orderID': order.order_number,
         'transactionID': payment.payment_id,
+        'first_name': order.first_name,
+        'last_name': order.last_name,
+        'city': order.city,
+        'state': order.state,
+        'country': order.country,
+        'zip_code': order.zip_code,
     }
     return JsonResponse(data)
 
 def order_complete(request):
-    return render(request, 'orders/order_complete.html')
+    order_number = request.GET.get('orderID')
+    transctionID = request.GET.get('payment_id')
+
+    # 1.
+    try:
+        order = Order.objects.get(order_number=order_number, is_ordered=True)
+        ordered_products = OrderProduct.objects.filter(order_id=order.id)
+        payment = Payment.objects.get(payment_id=transctionID)
+    except (Order.DoesNotExist, Payment.DoesNotExist):
+        return redirect('home')
+
+    # 2.
+    sub_total = order.order_total - order.tax
+
+    context = {
+        'order': order,
+        'ordered_products': ordered_products,
+        'orderID': order.order_number,
+        'payment_id': transctionID,
+        'payment': payment,
+        'sub_total': sub_total,
+        'tax': order.tax,
+    }
+    return render(request, 'orders/order_complete.html', context)
