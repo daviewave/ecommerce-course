@@ -1,6 +1,6 @@
 from django.contrib import admin
 #-- my imports --#
-from .models import Product, Variation
+from .models import Product, Variation, ReviewRating
 
 #NOTE: to populate the value for slug based on the input used for 'product_name' need to add the following class
 class ProductAdmin(admin.ModelAdmin):
@@ -16,3 +16,4 @@ class VariationAdmin(admin.ModelAdmin):
 # Register models
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Variation, VariationAdmin)
+admin.site.register(ReviewRating)
