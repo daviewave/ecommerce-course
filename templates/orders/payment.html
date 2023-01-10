@@ -154,10 +154,6 @@
 
                                     // finalize the transaction
                                     onApprove: (data, actions) => {
-                                        console.log('DATA')
-                                        console.log(data)
-                                        console.log('ACTIONS')
-                                        console.log(actions)
                                         const captureOrderHandler = (details) => {
                                             storeTransactionDetails()
                                             function storeTransactionDetails() {
@@ -177,14 +173,12 @@
                                                 })
                                                     .then(res => res.json())
                                                     .then(data => {
-                                                        window.location.href = `{% url 'order_complete' %}`
+                                                        window.location.href = `{% url 'order_complete' %}?orderID=${data.orderID}&payment_id=${data.transactionID}`
                                                     })
                                             }
-
                                             const payerName = details.payer.name.given_name;
                                             console.log('Transaction completed');
                                         };
-
                                         return actions.order.capture().then(captureOrderHandler);
                                     },
 
