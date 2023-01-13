@@ -77,7 +77,7 @@ def get_users_review(user, product_id):
 def get_review_instances(request, reviews):
     return ReviewForm(request.POST, instance=reviews)
 
-def save_review_form_data(request, form, url, product_id):
+def _save_review_form_data(request, form, url, product_id):
     data = ReviewRating()
     data.subject = form.cleaned_data['subject']
     data.rating = form.cleaned_data['rating']
@@ -89,9 +89,7 @@ def save_review_form_data(request, form, url, product_id):
     messages.success(request, 'Thank you! Your review has been submitted')
     return redirect(url)
 
-
-
-def handle_review_form_data(request, user, url, product_id):
+def _handle_review_form_data(request, user, url, product_id):
     try:
         reviews = get_users_review(user, product_id)
         form = get_review_instances(request, reviews)
@@ -101,11 +99,10 @@ def handle_review_form_data(request, user, url, product_id):
     except ReviewRating.DoesNotExist:
         form = ReviewForm(request.POST)
         if form.is_valid():
-            save_review_form_data(request, user, url, product_id)
-
+            _save_review_form_data(request, user, url, product_id)
 
 def submit_review(request, product_id):
     url = get_previous_page_url(request)
     if request.method == 'POST':
-        handle_review_form_data(request, request.user, url, product_id)
+        _handle_review_form_data(request, request.user, url, product_id)
 
