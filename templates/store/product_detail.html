@@ -28,6 +28,19 @@
 
                             <h2 class="title">{{ single_product.product_name }}</h2>
 
+                            <div class="rating-star">
+                                <span>
+                                    <i class="fa fa-star{% if single_product.get_average_rating_of_product < 0.5 %}-o{% elif single_product.get_average_rating_of_product > 0.5 and single_product.get_average_rating_of_product < 1 %}-half-o {% endif %}" style="color: #ffb503" aria-hidden="true"></i>
+                                    <i class="fa fa-star{% if single_product.get_average_rating_of_product < 1.5 %}-o{% elif single_product.get_average_rating_of_product > 1.5 and single_product.get_average_rating_of_product < 2 %}-half-o {% endif %}" style="color: #ffb503" aria-hidden="true"></i>
+                                    <i class="fa fa-star{% if single_product.get_average_rating_of_product < 2.5 %}-o{% elif single_product.get_average_rating_of_product > 2.5 and single_product.get_average_rating_of_product < 3 %}-half-o {% endif %}" style="color: #ffb503" aria-hidden="true"></i>
+                                    <i class="fa fa-star{% if single_product.get_average_rating_of_product < 3.5 %}-o{% elif single_product.get_average_rating_of_product > 3.5 and single_product.get_average_rating_of_product < 4 %}-half-o {% endif %}" style="color: #ffb503" aria-hidden="true"></i>
+                                    <i class="fa fa-star{% if single_product.get_average_rating_of_product < 4.5 %}-o{% elif single_product.get_average_rating_of_product > 4.5 and single_product.get_average_rating_of_product < 5 %}-half-o {% endif %}" style="color: #ffb503" aria-hidden="true"></i>
+                                <span>({{single_product.get_num_reviews}})</span>
+                                </span>
+                            </div>
+
+                            
+
                             <div class="mb-3">
                                 <var class="price h4">${{ single_product.price }}</var>
                             </div>
@@ -83,8 +96,10 @@
                 <form action="{% url 'submit_review' single_product.id %}" method="POST">
                 {% csrf_token %}
                     <h5>Leave Your Review:</h5>
+                    
+
                     <div>
-                        <label>Rating:</label>
+                        <label>Rating: {{single_product.get_average_rating_of_product}}</label>
                         <br>
                         <div class="rate">
                             <input type="radio" name="rating" id="rating10" value="5" required />
@@ -134,6 +149,16 @@
 
                 <header class="section-heading">
                     <h3>Customer Reviews </h3>
+                    <div class="rating-star">
+                        <span>
+                            <i class="fa fa-star{% if single_product.get_average_rating_of_product < 0.5 %}-o{% elif single_product.get_average_rating_of_product > 0.5 and single_product.get_average_rating_of_product < 1 %}-half-o {% endif %}" style="color: #ffb503" aria-hidden="true"></i>
+                            <i class="fa fa-star{% if single_product.get_average_rating_of_product < 1.5 %}-o{% elif single_product.get_average_rating_of_product > 1.5 and single_product.get_average_rating_of_product < 2 %}-half-o {% endif %}" style="color: #ffb503" aria-hidden="true"></i>
+                            <i class="fa fa-star{% if single_product.get_average_rating_of_product < 2.5 %}-o{% elif single_product.get_average_rating_of_product > 2.5 and single_product.get_average_rating_of_product < 3 %}-half-o {% endif %}" style="color: #ffb503" aria-hidden="true"></i>
+                            <i class="fa fa-star{% if single_product.get_average_rating_of_product < 3.5 %}-o{% elif single_product.get_average_rating_of_product > 3.5 and single_product.get_average_rating_of_product < 4 %}-half-o {% endif %}" style="color: #ffb503" aria-hidden="true"></i>
+                            <i class="fa fa-star{% if single_product.get_average_rating_of_product < 4.5 %}-o{% elif single_product.get_average_rating_of_product > 4.5 and single_product.get_average_rating_of_product < 5 %}-half-o {% endif %}" style="color: #ffb503" aria-hidden="true"></i>
+                        <span>{{single_product.get_num_reviews}} Reviews</span>
+                        </span>
+                    </div>
                 </header>
 
                 {% for review in reviews %}
