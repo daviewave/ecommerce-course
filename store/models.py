@@ -1,8 +1,8 @@
 from django.db import models
-#-- my imports --#
 from category.models import Category
 from accounts.models import Account
 from django.urls import reverse
+from django.db.models import Avg, Count
 
 
 class Product(models.Model):
@@ -19,11 +19,21 @@ class Product(models.Model):
     # FOREIGN KEY
     category        = models.ForeignKey(Category, on_delete=models.CASCADE) # cascade = if a category gets deleted, all products within that category are also deleted
 
+    def __str__(self):
+        return self.product_name
+
     def get_url(self):
             return reverse('product_detail', args=[self.category.slug, self.slug])
 
-    def __str__(self):
-        return self.product_name
+    def get_average_rating_of_product(self):
+        reviews = ReviewRating.objects.filter(product=self, status=True).aggregate(average=Avg('rating'))
+        if reviews['average'] is not None:
+            return float(reviews['average'])
+
+    def get_num_reviews(self):
+        reviews = ReviewRating.objects.filter(product=self, status=True).aggregate(count=Count('id'))
+        if reviews['count'] is not None:
+            return int(reviews['count'])
 
 
 class VariationManager(models.Manager):
