@@ -37,10 +37,14 @@ def handle_category_slug(request, category_slug):
         return products, num_prods
 
 def _check_if_reviewer_has_purchased_product(user, single_product):
-    try:
-        return OrderProduct.objects.filter(account=user, product_id=single_product.id).exists()
-    except OrderProduct.DoesNotExist:
-        print('Error: The user trying to leave a review has not purchased this item')
+    if user.is_authenticated:
+        try:
+            return OrderProduct.objects.filter(account=user, product_id=single_product.id).exists()
+        except OrderProduct.DoesNotExist:
+            print('Error: The user trying to leave a review has not purchased this item')
+            return None
+    else:
+        print('User not logged in.')
         return None
 
 def get_products_reviews(product):
