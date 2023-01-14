@@ -61,6 +61,10 @@ class Account(AbstractBaseUser):
     # NOTE: This lets the account model know that they will be using/inheriting the Account Models to instantiate user and superuser accounts
     objects = AccountManager()
 
+    def full_name(self):
+        return f'{self.first_name} {self.last_name}'
+
+
     # NOTE: This causes the top field on the django login page to prompt for email instead of username
     def __str__(self):
         return self.email
