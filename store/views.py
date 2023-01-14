@@ -7,6 +7,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from .forms import ReviewForm
 from django.contrib import messages
+from orders.models import OrderProduct
 
 #-- Helper Methods --#
 def _get_single_product(category_slug, product_slug):
@@ -35,14 +36,22 @@ def handle_category_slug(request, category_slug):
         products = _get_paginated_products(request, non_paginated_products, 4)
         return products, num_prods
 
-#-- Major Endpoints --#
 def product_detail(request, category_slug, product_slug):
     single_product = _get_single_product(category_slug, product_slug)
     is_in_cart = _is_already_in_cart(request, single_product)
-      
+    
+    try:
+        order_product = OrderProduct.objects.filter(account=request.user, product_id=single_product.id).exists()
+    except OrderProduct.DoesNotExist:
+        order_product = None
+
+    reviews = ReviewRating.objects.filter(product_id=single_product.id, status=True)
+
     context = {
         'single_product': single_product,
         'is_in_cart': is_in_cart,
+        'order_product': order_product,
+        'reviews': reviews,
     }
     return render(request, 'store/product_detail.html', context)
 
@@ -72,7 +81,7 @@ def get_previous_page_url(request):
     return request.META.get('HTTP_REFERER')
 
 def get_users_review(user, product_id):
-    return ReviewRating.objects.get(user__id=user, product__id=product_id)
+    return ReviewRating.objects.get(user__id=user.id, product__id=product_id)
 
 def get_review_instances(request, reviews):
     return ReviewForm(request.POST, instance=reviews)
@@ -99,10 +108,11 @@ def _handle_review_form_data(request, user, url, product_id):
     except ReviewRating.DoesNotExist:
         form = ReviewForm(request.POST)
         if form.is_valid():
-            _save_review_form_data(request, user, url, product_id)
+            _save_review_form_data(request, form, url, product_id)
 
 def submit_review(request, product_id):
     url = get_previous_page_url(request)
     if request.method == 'POST':
         _handle_review_form_data(request, request.user, url, product_id)
+        return redirect(url)
 
