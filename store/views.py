@@ -36,16 +36,21 @@ def handle_category_slug(request, category_slug):
         products = _get_paginated_products(request, non_paginated_products, 4)
         return products, num_prods
 
+def _check_if_reviewer_has_purchased_product(user, single_product):
+    try:
+        return OrderProduct.objects.filter(account=user, product_id=single_product.id).exists()
+    except OrderProduct.DoesNotExist:
+        print('Error: The user trying to leave a review has not purchased this item')
+        return None
+
+def get_products_reviews(product):
+    return ReviewRating.objects.filter(product_id=product.id, status=True)
+
 def product_detail(request, category_slug, product_slug):
     single_product = _get_single_product(category_slug, product_slug)
     is_in_cart = _is_already_in_cart(request, single_product)
-    
-    try:
-        order_product = OrderProduct.objects.filter(account=request.user, product_id=single_product.id).exists()
-    except OrderProduct.DoesNotExist:
-        order_product = None
-
-    reviews = ReviewRating.objects.filter(product_id=single_product.id, status=True)
+    order_product = _check_if_reviewer_has_purchased_product(request.user, single_product)
+    reviews = get_products_reviews(single_product)
 
     context = {
         'single_product': single_product,
@@ -115,4 +120,3 @@ def submit_review(request, product_id):
     if request.method == 'POST':
         _handle_review_form_data(request, request.user, url, product_id)
         return redirect(url)
-
