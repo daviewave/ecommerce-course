@@ -140,7 +140,15 @@
                                     <!-- PRICE -->
                                     <div class="price-wrap mt-2">
                                         <span class="price">${{ product.price }}</span>
-
+                                        <div class="rating-star">
+                                            <span>
+                                                <i class="fa fa-star{% if product.get_average_rating_of_product < 0.5 %}-o{% elif product.get_average_rating_of_product > 0.5 and product.get_average_rating_of_product < 1 %}-half-o {% endif %}"  aria-hidden="true"></i>
+                                                <i class="fa fa-star{% if product.get_average_rating_of_product < 1.5 %}-o{% elif product.get_average_rating_of_product > 1.5 and product.get_average_rating_of_product < 2 %}-half-o {% endif %}"  aria-hidden="true"></i>
+                                                <i class="fa fa-star{% if product.get_average_rating_of_product < 2.5 %}-o{% elif product.get_average_rating_of_product > 2.5 and product.get_average_rating_of_product < 3 %}-half-o {% endif %}"  aria-hidden="true"></i>
+                                                <i class="fa fa-star{% if product.get_average_rating_of_product < 3.5 %}-o{% elif product.get_average_rating_of_product > 3.5 and product.get_average_rating_of_product < 4 %}-half-o {% endif %}"  aria-hidden="true"></i>
+                                                <i class="fa fa-star{% if product.get_average_rating_of_product < 4.5 %}-o{% elif product.get_average_rating_of_product > 4.5 and product.get_average_rating_of_product < 5 %}-half-o {% endif %}"  aria-hidden="true"></i>
+                                            </span>
+                                        </div>
                                         <!-- NOTE! -->
                                         <!-- CAN DISPLAY DISCOUNTS OR OLD PRICES WITH THIS CODE -->
                                         <!-- <del class="price-old">$1980</del> -->
