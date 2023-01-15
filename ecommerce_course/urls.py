@@ -7,7 +7,7 @@ from django.conf import settings
 from django.urls import include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path(r'^secure_admin/', include(admin.site.urls)),
     path('', views.home, name='home'),
     path('store/', include('store.urls')),
     path('cart/', include('carts.urls')),
