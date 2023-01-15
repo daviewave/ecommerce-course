@@ -35,14 +35,14 @@ input:checked ~ label, label:hover ~ label{
     color: #ffb503;
 }
 
-/* NOT WORKING */
-.rating-star span i{
-    color: #ffb503 !important;
-}
-
 /* hover highlight */
 input:checked + label:hover, input:checked ~ label:hover, input:checked ~ label:hover ~ label,
 label:hover ~ input:checked ~ label{
     color: #cc9000;
+}
+
+/* NOT WORKING */
+.rating-star span i{
+    color: #ffb503 !important;
 }
 
