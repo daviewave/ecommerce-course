@@ -48,10 +48,17 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'django_session_timeout.middleware.SessionTimeoutMiddleware',    
 ]
 
 # NOTE: the major urls.py router (root urls.py)
 ROOT_URLCONF = "ecommerce_course.urls"
+
+SESSION_EXPIRE_SECONDS = 3600  # 1 hour
+SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
+SESSION_TIMEOUT_REDIRECT = 'accounts/login' # NOTE: need to fix this
+
+
 
 TEMPLATES = [
     {
