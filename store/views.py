@@ -10,7 +10,7 @@ from django.contrib import messages
 from orders.models import OrderProduct
 
 #-- Helper Methods --#
-def _get_single_product(category_slug, product_slug):
+def get_single_product(category_slug, product_slug):
     try:
         return Product.objects.get(category__slug=category_slug, slug=product_slug)
     except Exception as e:
@@ -51,7 +51,7 @@ def get_products_reviews(product):
     return ReviewRating.objects.filter(product_id=product.id, status=True)
 
 def product_detail(request, category_slug, product_slug):
-    single_product = _get_single_product(category_slug, product_slug)
+    single_product = get_single_product(category_slug, product_slug)
     is_in_cart = _is_already_in_cart(request, single_product)
     order_product = _check_if_reviewer_has_purchased_product(request.user, single_product)
     reviews = get_products_reviews(single_product)
