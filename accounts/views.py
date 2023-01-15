@@ -1,5 +1,5 @@
-from django.shortcuts import render, redirect
-from .forms import RegistrationForm
+from django.shortcuts import render, redirect, get_object_or_404
+from .forms import RegistrationForm, AccountForm, UserProfileForm
 from .models import Account
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
@@ -15,7 +15,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage, send_mail
 from carts.models import Cart, CartItem
 from store.models import Product
-import requests
+from accounts.models import UserProfile
+
 
 
 def _get_cart_items_ids_and_existing_variations(cart_items):
@@ -244,5 +245,24 @@ def my_orders(request):
     return render(request, 'accounts/my_orders.html', context)
 
 def edit_profile(request):
+    user_profile = get_object_or_404(UserProfile, user=request.user)
+    
+    if request.method == 'POST':
+        user_form = AccountForm(request.POST, instance=request.user) #NOTE: instance updates existing
+        user_profile_form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
+        if user_form.is_valid() and user_profile_form.is_valid():
+            user_form.save()
+            user_profile_form.save()
+            messages.success(request, 'Your profile has been updated.')
+            return redirect('edit_profile')
+    else:
+        user_form = AccountForm(instance=request.user)
+        user_profile_form = UserProfileForm(instance=user_profile)
 
-    return render(request, 'accounts/edit_profile.html')
+    context = {
+        'user_form': user_form,
+        'user_profile_form': user_profile_form,
+        'user_profile': user_profile,         
+    }
+    return render(request, 'accounts/edit_profile.html', context)
+
