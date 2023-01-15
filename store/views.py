@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Product, ReviewRating
+from .models import Product, ReviewRating, ProductGallery
 from category.models import Category
 from carts.models import CartItem
 from carts.views import _get_session_id
@@ -56,11 +56,14 @@ def product_detail(request, category_slug, product_slug):
     order_product = _check_if_reviewer_has_purchased_product(request.user, single_product)
     reviews = get_products_reviews(single_product)
 
+    product_images = ProductGallery.objects.filter(product_id=single_product.id)
+
     context = {
         'single_product': single_product,
         'is_in_cart': is_in_cart,
         'order_product': order_product,
         'reviews': reviews,
+        'product_images': product_images,
     }
     return render(request, 'store/product_detail.html', context)
 
