@@ -16,6 +16,7 @@ from django.core.mail import EmailMessage, send_mail
 from carts.models import Cart, CartItem
 from store.models import Product
 from accounts.models import UserProfile
+from orders.models import OrderProduct
 
 
 
@@ -178,10 +179,12 @@ def dashboard(request):
     orders = Order.objects.order_by('-created_at').filter(user_id=request.user.id, is_ordered=True)
     num_orders = orders.count()
 
+    user_profile = UserProfile.objects.get(user_id=request.user.id)
+
     context = {
         'num_orders': num_orders,
+        'user_profile': user_profile,
     }
-
     return render(request, 'accounts/dashboard.html', context)
 
 def forgot_password(request):
@@ -302,3 +305,24 @@ def change_password(request):
             return redirect('change_password')
 
     return render(request, 'accounts/change_password.html')
+
+def calc_subtotal(order):
+    print('ORDER TOTAL: {}'.format(order.order_total))
+    print('ORDER TOTAL: {}'.format(order.tax))
+    subtotal = order.order_total - order.tax
+    print('Sub TOTAL: {}'.format(subtotal))
+    return order.order_total - order.tax
+
+@login_required(login_url='login')
+def order_details(request, order_id):
+    order_details = OrderProduct.objects.filter(order__order_number=order_id)
+    order = Order.objects.get(order_number=order_id)
+    
+    context = {
+        'order_details': order_details,
+        'order': order,
+        'subtotal': calc_subtotal(order),
+        'tax': order.tax,
+        'order_total': order.order_total
+    }
+    return render(request, 'accounts/order_details.html', context)
