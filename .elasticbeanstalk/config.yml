@@ -1,13 +1,9 @@
 branch-defaults:
   main:
-    environment: ecommerce-django-dev
+    environment: ecommerce-course-env
     group_suffix: null
-environment-defaults:
-  ecommerce-django-dev:
-    branch: null
-    repository: null
 global:
-  application_name: ecommerce-django
+  application_name: ecommerce_course
   branch: null
   default_ec2_keyname: aws-eb
   default_platform: Python 3.8 running on 64bit Amazon Linux 2
