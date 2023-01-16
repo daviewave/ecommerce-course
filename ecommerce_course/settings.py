@@ -22,7 +22,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY  = config('SECRET_KEY')
 DEBUG       = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = [
+    'localhost', 
+    'ecommerce-env.eba-dip2nfbp.us-west-2.elasticbeanstalk.com',
+    'https://ecommerce-course.vercel.app/',
+]
 
 # Application definition
 
