@@ -23,7 +23,6 @@ SECRET_KEY  = config('SECRET_KEY')
 DEBUG       = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = [
-    '*'
     'localhost', 
     'ecommerce-django-dev.us-east-1.elasticbeanstalk.com',
     'https://ecommerce-course.vercel.app/',
@@ -94,16 +93,33 @@ AUTH_USER_MODEL = 'accounts.Account'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        'NAME': os.getenv('DATABASE_NAME','postgres'),
-        'USER': os.getenv('DATABASE_USERNAME', 'postgres'),
-        'PASSWORD': os.getenv('DATABASE_PASSWORD', 'postgres'),
-        'HOST': os.getenv('DATABASE_HOST', 'localhost'),
-        'PORT': os.getenv('DATABASE_PORT', 5433),
+
+if 'RDS_DB_NAME' in os.environ:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql_psycopg2",
+            'NAME': os.environ['RDS_DB_NAME'],
+            'USER': os.environ['RDS_USERNAME'],
+            'PASSWORD': os.environ['RDS_PASSWORD'],
+            'HOST': os.environ['RDS_HOSTNAME'],
+            'PORT': os.environ['RDS_PORT'],
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql_psycopg2",
+            'NAME': os.getenv('DATABASE_NAME','postgres'),
+            'USER': os.getenv('DATABASE_USERNAME', 'postgres'),
+            'PASSWORD': os.getenv('DATABASE_PASSWORD', 'postgres'),
+            'HOST': os.getenv('DATABASE_HOST', 'localhost'),
+            'PORT': os.getenv('DATABASE_PORT', 5433),
+        }
+    }
+
+
+
+
 
 
 # Password validation
