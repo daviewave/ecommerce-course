@@ -23,8 +23,9 @@ SECRET_KEY  = config('SECRET_KEY')
 DEBUG       = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = [
+    '*'
     'localhost', 
-    'ecommerce-env.eba-dip2nfbp.us-west-2.elasticbeanstalk.com',
+    'ecommerce-django-dev.us-east-1.elasticbeanstalk.com',
     'https://ecommerce-course.vercel.app/',
 ]
 
