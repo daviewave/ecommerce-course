@@ -1,9 +1,9 @@
 branch-defaults:
   main:
-    environment: ecommerce-course-env
+    environment: ecommerce-env
     group_suffix: null
 global:
-  application_name: ecommerce_course
+  application_name: ecommerce
   branch: null
   default_ec2_keyname: aws-eb
   default_platform: Python 3.8 running on 64bit Amazon Linux 2

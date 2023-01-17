@@ -24,7 +24,7 @@ DEBUG       = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = [
     'localhost', 
-    'ecommerce-course-env.us-east-1.elasticbeanstalk.com',
+    'ecommerce-env.us-east-1.elasticbeanstalk.com',
 ]
 
 # Application definition
