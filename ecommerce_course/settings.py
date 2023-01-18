@@ -91,28 +91,28 @@ AUTH_USER_MODEL = 'accounts.Account'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 
-if 'RDS_DB_NAME' in os.environ:
-    DATABASES = {
-        "default": {
-            "ENGINE":   "django.db.backends.postgresql_psycopg2",
-            'NAME':     os.environ['RDS_DB_NAME'],
-            'USER':     os.environ['RDS_USERNAME'],
-            'PASSWORD': os.environ['RDS_PASSWORD'],
-            'HOST':     os.environ['RDS_HOSTNAME'],
-            'PORT':     os.environ['RDS_PORT'],
-        }
+# if 'RDS_DB_NAME' in os.environ:
+#     DATABASES = {
+#         "default": {
+#             "ENGINE":   "django.db.backends.postgresql_psycopg2",
+#             'NAME':     os.environ['RDS_DB_NAME'],
+#             'USER':     os.environ['RDS_USERNAME'],
+#             'PASSWORD': os.environ['RDS_PASSWORD'],
+#             'HOST':     os.environ['RDS_HOSTNAME'],
+#             'PORT':     os.environ['RDS_PORT'],
+#         }
+#     }
+# else:
+DATABASES = {
+    "default": {
+        "ENGINE":   "django.db.backends.postgresql_psycopg2",
+        'NAME':     os.getenv('DATABASE_NAME','postgres'),
+        'USER':     os.getenv('DATABASE_USERNAME', 'postgres'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD', 'postgres'),
+        'HOST':     os.getenv('DATABASE_HOST', 'localhost'),
+        'PORT':     os.getenv('DATABASE_PORT', 5433),
     }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE":   "django.db.backends.postgresql_psycopg2",
-            'NAME':     os.getenv('DATABASE_NAME','postgres'),
-            'USER':     os.getenv('DATABASE_USERNAME', 'postgres'),
-            'PASSWORD': os.getenv('DATABASE_PASSWORD', 'postgres'),
-            'HOST':     os.getenv('DATABASE_HOST', 'localhost'),
-            'PORT':     os.getenv('DATABASE_PORT', 5433),
-        }
-    }
+}
 
 
 
