@@ -13,14 +13,12 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 #-- my imports --*
 import os
-from decouple import config
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY  = config('SECRET_KEY')
-DEBUG       = config('DEBUG', default=True, cast=bool)
+SECRET_KEY  = os.getenv('SECRET_KEY', 'django-insecure-6lsm7+d8@f#nsv^ax722#x(9&68iks#42@48^%sv-s@narc=wv')
+DEBUG       = os.getenv('DEBUG', False)
 
 ALLOWED_HOSTS = [
     'localhost', 
@@ -112,7 +110,7 @@ else:
             'USER':     os.getenv('DATABASE_USERNAME', 'postgres'),
             'PASSWORD': os.getenv('DATABASE_PASSWORD', 'postgres'),
             'HOST':     os.getenv('DATABASE_HOST', 'localhost'),
-            'PORT':     os.getenv('DATABASE_PORT', 5432),
+            'PORT':     os.getenv('DATABASE_PORT', 5433),
         }
     }
 
@@ -175,9 +173,15 @@ MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
 
-# SMPT Configuration
-EMAIL_HOST              = config('EMAIL_HOST')
-EMAIL_HOST_USER         = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD     = config('EMAIL_HOST_PASSWORD')
-EMAIL_PORT              = config('EMAIL_PORT', cast=int)
-EMAIL_USE_TLS           = config('EMAIL_USE_TLS')
+# # SMPT Configuration
+# EMAIL_HOST              = config('EMAIL_HOST')
+# EMAIL_HOST_USER         = config('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD     = config('EMAIL_HOST_PASSWORD')
+# EMAIL_PORT              = config('EMAIL_PORT', cast=int)
+# EMAIL_USE_TLS           = config('EMAIL_USE_TLS')
+
+EMAIL_HOST              = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_HOST_USER         = os.getenv('EMAIL_HOST_USER', 'daviewave@gmail.com')
+EMAIL_HOST_PASSWORD     = os.getenv('EMAIL_HOST_PASSWORD', 'nuqvzsnvwybstvsb')
+EMAIL_PORT              = os.getenv('EMAIL_PORT', 587)
+EMAIL_USE_TLS           = os.getenv('EMAIL_USE_TLS', True)
