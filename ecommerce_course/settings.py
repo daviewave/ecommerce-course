@@ -22,7 +22,7 @@ DEBUG       = os.getenv('DEBUG', False)
 
 ALLOWED_HOSTS = [
     'localhost', 
-    'ecommerce-prod-env.eba-npw4mimi.us-east-1.elasticbeanstalk.com',
+    'ecommerce-django-dev.us-east-1.elasticbeanstalk.com',
 ]
 
 # Application definition
@@ -103,18 +103,23 @@ AUTH_USER_MODEL = 'accounts.Account'
 #         }
 #     }
 # else:
+# DATABASES = {
+#     "default": {
+#         "ENGINE":   "django.db.backends.postgresql_psycopg2",
+#         'NAME':     os.getenv('DATABASE_NAME','postgres'),
+#         'USER':     os.getenv('DATABASE_USERNAME', 'postgres'),
+#         'PASSWORD': os.getenv('DATABASE_PASSWORD', 'postgres'),
+#         'HOST':     os.getenv('DATABASE_HOST', 'localhost'),
+#         'PORT':     os.getenv('DATABASE_PORT', 5433),
+#     }
+# }
+
 DATABASES = {
-    "default": {
-        "ENGINE":   "django.db.backends.postgresql_psycopg2",
-        'NAME':     os.getenv('DATABASE_NAME','postgres'),
-        'USER':     os.getenv('DATABASE_USERNAME', 'postgres'),
-        'PASSWORD': os.getenv('DATABASE_PASSWORD', 'postgres'),
-        'HOST':     os.getenv('DATABASE_HOST', 'localhost'),
-        'PORT':     os.getenv('DATABASE_PORT', 5433),
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-
 
 
 
