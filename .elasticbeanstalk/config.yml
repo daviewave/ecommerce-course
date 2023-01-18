@@ -1,11 +1,11 @@
 branch-defaults:
   main:
-    environment: ecommerce-env
+    environment: ecommerce-prod-env
     group_suffix: null
 global:
-  application_name: ecommerce
+  application_name: ecommerce-prod
   branch: null
-  default_ec2_keyname: aws-eb
+  default_ec2_keyname: ecommerce-prod
   default_platform: Python 3.8 running on 64bit Amazon Linux 2
   default_region: us-east-1
   include_git_submodules: true
