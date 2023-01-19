@@ -130,6 +130,9 @@ ENV/
 env.bak/
 venv.bak/
 
+eb-venv
+.eb-venv
+
 # Spyder project settings
 .spyderproject
 .spyproject
@@ -261,3 +264,7 @@ modules.xml
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+
+
+*/bin
