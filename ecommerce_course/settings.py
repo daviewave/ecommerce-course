@@ -21,7 +21,8 @@ SECRET_KEY  = os.getenv('SECRET_KEY', 'django-insecure-6lsm7+d8@f#nsv^ax722#x(9&
 DEBUG       = os.getenv('DEBUG', False)
 
 ALLOWED_HOSTS = [
-    'localhost', 
+    'localhost',
+    '127.0.0.1',
     'ecommerce-django-dev.us-east-1.elasticbeanstalk.com',
 ]
 
