@@ -103,23 +103,23 @@ AUTH_USER_MODEL = 'accounts.Account'
 #         }
 #     }
 # else:
-# DATABASES = {
-#     "default": {
-#         "ENGINE":   "django.db.backends.postgresql_psycopg2",
-#         'NAME':     os.getenv('DATABASE_NAME','postgres'),
-#         'USER':     os.getenv('DATABASE_USERNAME', 'postgres'),
-#         'PASSWORD': os.getenv('DATABASE_PASSWORD', 'postgres'),
-#         'HOST':     os.getenv('DATABASE_HOST', 'localhost'),
-#         'PORT':     os.getenv('DATABASE_PORT', 5433),
-#     }
-# }
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE":   "django.db.backends.postgresql_psycopg2",
+        'NAME':     os.getenv('DATABASE_NAME','postgres'),
+        'USER':     os.getenv('DATABASE_USERNAME', 'postgres'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD', 'postgres'),
+        'HOST':     os.getenv('DATABASE_HOST', 'localhost'),
+        'PORT':     os.getenv('DATABASE_PORT', 5433),
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 
