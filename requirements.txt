@@ -44,5 +44,4 @@ texttable==1.6.7
 urllib3==1.26.13
 wcwidth==0.1.9
 websocket-client==0.59.0
-Django==4.0.2
 psycopg2-binary==2.9.3
