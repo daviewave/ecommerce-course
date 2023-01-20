@@ -3,10 +3,11 @@ from django.shortcuts import render
 from store.models import Product, ReviewRating
 
 def _get_all_products_reviews(products):
+    reviews = None
     for product in products:
-        return ReviewRating.objects.filter(product_id=product.id, status=True)
+        reviews = ReviewRating.objects.filter(product_id=product.id, status=True)
+    return reviews
     
-    return ReviewRating.objects.filter(product_id=product.id, status=True)
 
 def home(request):
     products = Product.objects.filter(is_available=True).order_by('created_date')
