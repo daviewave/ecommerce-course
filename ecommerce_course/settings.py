@@ -23,7 +23,7 @@ DEBUG       = os.getenv('DEBUG', True)
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    'ecommerce-django-dev.us-east-1.elasticbeanstalk.com',
+    'ecommerce-django2-dev.us-east-1.elasticbeanstalk.com',
 ]
 
 # Application definition
