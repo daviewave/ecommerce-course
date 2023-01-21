@@ -11,19 +11,20 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
-#-- my imports --*
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY  = os.getenv('SECRET_KEY', 'django-insecure-6lsm7+d8@f#nsv^ax722#x(9&68iks#42@48^%sv-s@narc=wv')
-DEBUG       = os.getenv('DEBUG', False)
+DEBUG       = os.getenv('DEBUG', True)
+
 
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     'ecommerce-django-dev.us-east-1.elasticbeanstalk.com',
+    '*',
 ]
 
 # Application definition
@@ -43,15 +44,27 @@ INSTALLED_APPS = [
     "storages",
 ]
 
-if 'AWS_STORAGE_BUCKET_NAME' in os.environ:
-    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    MEDIAFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_STORAGE_BUCKET_NAME = 'ecommerce-course'
 
-    AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
-    AWS_S3_REGION_NAME = os.environ['AWS_S3_REGION_NAME']
-    AWS_S3_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
-    AWS_S3_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+# if 'AWS_STORAGE_BUCKET_NAME' in os.environ:
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+AWS_S3_REGION_NAME = os.environ['AWS_S3_REGION_NAME']
+AWS_S3_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+AWS_S3_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = 'public-read'
+AWS_LOCATION = 'static'
+STATICFILES_DIRS = ['ecommerce_course/static']
+STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -126,14 +139,6 @@ else:
         }
     }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-
 
 
 # Password validation
@@ -169,15 +174,17 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
+
+
 # NOTE: This defines where our static files will be stored in the project
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR /'static'
-STATICFILES_DIRS = ['ecommerce_course/static']
+# STATIC_URL = '/static/'
+# STATIC_ROOT = BASE_DIR /'static'
+# STATICFILES_DIRS = ['ecommerce_course/static']
 
 # NOTE: This defines where our media files will be stored in the project
+# DEFAULT_FILE_STORAGE = 'greatkart.media_storages.MediaStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR /'media'
-MEDIAFILES_DIRS = ['ecommerce_course/media']
 
 
 # Default primary key field type
@@ -190,12 +197,6 @@ MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
 
-# # SMPT Configuration
-# EMAIL_HOST              = config('EMAIL_HOST')
-# EMAIL_HOST_USER         = config('EMAIL_HOST_USER')
-# EMAIL_HOST_PASSWORD     = config('EMAIL_HOST_PASSWORD')
-# EMAIL_PORT              = config('EMAIL_PORT', cast=int)
-# EMAIL_USE_TLS           = config('EMAIL_USE_TLS')
 
 EMAIL_HOST              = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_HOST_USER         = os.getenv('EMAIL_HOST_USER', 'daviewave@gmail.com')
