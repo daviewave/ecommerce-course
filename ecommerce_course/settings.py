@@ -182,7 +182,7 @@ USE_TZ = True
 # STATICFILES_DIRS = ['ecommerce_course/static']
 
 # NOTE: This defines where our media files will be stored in the project
-# DEFAULT_FILE_STORAGE = 'greatkart.media_storages.MediaStorage'
+DEFAULT_FILE_STORAGE = 'ecommerce_course.media_files.MediaStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR /'media'
 
