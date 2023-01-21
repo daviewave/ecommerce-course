@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "carts",
     "orders",
     "storages",
+    "django_ses"
 ]
 
 AWS_STORAGE_BUCKET_NAME = 'ecommerce-course'
@@ -197,13 +198,18 @@ MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
 
-
-EMAIL_HOST              = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_HOST_USER         = os.getenv('EMAIL_HOST_USER', 'daviewave@gmail.com')
-EMAIL_HOST_PASSWORD     = os.getenv('EMAIL_HOST_PASSWORD', 'nuqvzsnvwybstvsb')
+EMAIL_BACKEND = 'django_ses.SESBackend'
+AWS_SES_RETURN_PATH     = 'davidsilveira.3.djs@gmail.com'
+DEFAULT_FROM_EMAIL      = 'davidsilveira.3.djs@gmail.com'
+FROM_EMAIL              = 'davidsilveira.3.djs@gmail.com'
+EMAIL_HOST              = os.getenv('EMAIL_HOST', 'email-smtp.us-east-1.amazonaws.com')
+EMAIL_HOST_USER         = os.getenv('EMAIL_HOST_USER', 'AKIAYSAC2SUIDV73W2QF')
+EMAIL_HOST_PASSWORD     = os.getenv('EMAIL_HOST_PASSWORD', 'BPIxCDrEEpsjdbQy4hXCclnq2Kc/pVmW+ruNltnrRHGE')
 EMAIL_PORT              = os.getenv('EMAIL_PORT', 587)
 EMAIL_USE_TLS           = os.getenv('EMAIL_USE_TLS', True)
 
-
+from django_ses import SESBackend
+AWS_SES_REGION = 'us-east-1'
+AWS_SES_REGION_ENDPOINT = 'davidsilveira.3.djs@gmail.com.us-east-1.amazonaws.com'
 
 
