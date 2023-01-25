@@ -7,10 +7,10 @@ class AccountManager(BaseUserManager):
         if not email:
             raise ValueError("Accounts must contain an email associated")
         
-        if not email or not username:
+        if not username:
             raise ValueError("Accounts must contain an username associated")
 
-        # NOTE: 'normalize_email'is a lowercase method
+        # NOTE: 'normalize_email' is a lowercase method
         user = self.model(
             email = self.normalize_email(email),
             username = username,
