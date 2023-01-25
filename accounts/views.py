@@ -18,8 +18,6 @@ from store.models import Product
 from accounts.models import UserProfile
 from orders.models import OrderProduct
 
-
-
 def _get_cart_items_ids_and_existing_variations(cart_items):
     ids = []
     existing_variations = []
@@ -48,47 +46,51 @@ def _is_variation_in_cart(cart):
 
 def _get_product_based_by_ID(product_id):
     return Product.objects.get(id=product_id)
+    
+
+def create_new_user_with_form_data(form):
+    first_name = form.cleaned_data['first_name']
+    last_name       = form.cleaned_data['last_name']
+    phone_number    = form.cleaned_data['phone_number']
+    email           = form.cleaned_data['email']
+    username        = email.split('@')[0]
+    password        = form.cleaned_data['password']
+
+    new_user = Account.objects.create_user(first_name=first_name, last_name=last_name, email=email, username=username, password=password)
+    new_user.phone_number = phone_number
+    new_user.save()
+    return new_user
+
+def create_new_user_profile(user):
+    profile = UserProfile()
+    profile.user_id = user.id
+    profile.profile_picture = 'default/default-user-pic.png'
+    profile.save()
+
+def send_new_user_account_activation_email(request, user):
+    current_site = get_current_site(request)
+    email_subject = '(ACCOUNT ACTIVATION) Activate your account with greatkart!'
+    email_message = render_to_string('accounts/account_verification_email', {
+        'user': user,
+        'domain': current_site,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'token': default_token_generator.make_token(user),
+    })
+    email_to = user.email
+    email = EmailMessage(email_message, email_message, to=[email_to])
+    email.send()
+    messages.success(request, 'Success! Account Registered! An activation link was sent to the email provided, activate to log in.')
 
 #-- Major Endpoints --#
 def register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)    
         if form.is_valid():
-            first_name      = form.cleaned_data['first_name']
-            last_name       = form.cleaned_data['last_name']
-            phone_number    = form.cleaned_data['phone_number']
-            email           = form.cleaned_data['email']
-            username        = email.split('@')[0]
-            password        = form.cleaned_data['password']
-
-            user = Account.objects.create_user(first_name=first_name, last_name=last_name, email=email, username=username, password=password)
-            user.phone_number = phone_number
-            user.save()
-
-
-            # Create User Profile
-            profile = UserProfile()
-            profile.user_id = user.id
-            profile.profile_picture = 'default/default-user-pic.png'
-            profile.save()
-
-
-
-
-            # USER ACTIVATION
-            current_site = get_current_site(request)
-            mail_subject = 'ACCOUNT ACTIVATION'
-            message = render_to_string('accounts/account_verification_email.html', {
-                'user': user,
-                'domain': current_site,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': default_token_generator.make_token(user),
-            })
-            to_email = email
-            send_email = EmailMessage(mail_subject, message, to=[to_email])
-            send_email.send()
-            # messages.success(request, 'Success! Account Registered! An activation link was sent to the email provided, activate to log in.')
-            return redirect('/accounts/login/?command=verification&email=' + email)
+            new_user = create_new_user_with_form_data(form)
+            create_new_user_profile(new_user)
+            send_new_user_account_activation_email(request, new_user)
+            
+            return redirect('/accounts/login/?command=verification&email=' + new_user.email)
     else:
         form = RegistrationForm()
             
@@ -96,8 +98,6 @@ def register(request):
         "form": form,
     }
     return render(request, 'accounts/register.html', context)
-
-# def combine_session_to_user_cart_variations():
 
 
 def login(request):
